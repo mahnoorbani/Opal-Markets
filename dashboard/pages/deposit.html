@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Deposit & Withdraw – Opal Markets</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Deposit and Withdraw — Opal Markets. Fast, secure gateways, wallet integrations and analytics." />
+  <link href="img/logo.png" rel="shortcut icon"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap & FontAwesome (assumed local or CDN) -->
+  <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="css/themify-icons.css"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles (dark finance theme: navy + gold) -->
+  <style>
+    
+  :root{
+    --bg:#000000;            /* black background */
+    --card:#0b0b0b;          /* slightly lighter black for cards */
+    --muted:#cccccc;         /* muted white text */
+    --accent:#007bff;        /* bright blue accent */
+    --accent-2:#3399ff;      /* secondary blue */
+    --glass: rgba(255,255,255,0.05);
+    --glass-2: rgba(255,255,255,0.03);
+    --radius:12px;
+    font-family: 'Lato', sans-serif;
+  }
+
+  html,body{
+    height:100%;
+    background: linear-gradient(180deg,var(--bg), #050505);
+    color:#ffffff;
+    margin:0;
+  }
+
+  .header-section{background:transparent; padding:18px 0;}
+  .site-logo img{height: 120px;}
+  .main-menu .menu-list li a{color:var(--muted); margin-right:14px;}
+  .site-btn{
+    background:linear-gradient(90deg,var(--accent), var(--accent-2));
+    color:#ffffff;
+    border-radius:10px;
+    padding:8px 14px;
+    font-weight:700;
+    box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  .page-info-section{padding:28px 0; background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);}
+  .page-info-section h2{color:#fff;}
+  .container{max-width:1188px; margin:0 auto; padding-left:16px; padding-right:16px;}
+
+  .card-ghost{
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.08);
+    padding:20px;
+    border-radius:var(--radius);
+  }
+
+  .big-hero{display:flex; gap:28px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+  .hero-left h2{font-size:28px; margin:0 0 6px;}
+  .hero-left p{color:var(--muted); margin-bottom:12px;}
+  .rounded-shadow{border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.7);}
+
+  .tabs{display:flex; gap:10px; background:var(--glass); padding:8px; border-radius:10px; width:fit-content; border:1px solid rgba(255,255,255,0.05);}
+  .tab{padding:8px 16px; cursor:pointer; color:var(--muted); border-radius:8px; font-weight:600;}
+  .tab.active{background: linear-gradient(90deg,var(--accent), var(--accent-2)); color:#fff; box-shadow: 0 6px 18px rgba(0,0,0,0.4);}
+
+  .grid-4{display:grid; grid-template-columns: repeat(4,1fr); gap:14px;}
+  .gateway{padding:18px; border-radius:10px; text-align:center; background:var(--card); border:1px solid rgba(255,255,255,0.05);}
+  .gateway i{font-size:30px; color:var(--accent); margin-bottom:8px;}
+  .gateway small{color:var(--muted); display:block; margin-top:6px;}
+
+  .counters{display:flex; gap:14px; flex-wrap:wrap;}
+  .counter{flex:1; min-width:180px; padding:18px; border-radius:12px; background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.05); text-align:center;}
+  .counter h3{margin:6px 0; font-size:22px;}
+  .counter p{color:var(--muted); margin:0;}
+
+  .rate-card{padding:14px; border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08);}
+  .calc{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+  .calc input, .calc select{background:transparent; border:1px solid rgba(255,255,255,0.08); color:var(--muted); padding:10px; border-radius:8px; min-width:140px;}
+
+  .faq-item{border-radius:10px; overflow:hidden; margin-bottom:10px; border:1px solid rgba(255,255,255,0.08);}
+  .faq-head{padding:12px 16px; cursor:pointer; background:var(--glass); display:flex; justify-content:space-between; align-items:center;}
+  .faq-body{padding:12px 16px; background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent); color:var(--muted); display:none;}
+
+  @media (max-width:992px){
+    .grid-4{grid-template-columns: repeat(2,1fr);}
+    .counters{flex-direction:column;}
+  }
+  @media (max-width:576px){
+    .grid-4{grid-template-columns: 1fr;}
+  }
+
+  .gateway:hover, .rate-card:hover{transform: translateY(-6px); transition: .28s cubic-bezier(.2,.9,.2,1);}
+  .site-btn:hover{transform: translateY(-3px); transition: .18s;}
+</style>
+
+  
+</head>
+<body>
+
+  <!-- header -->
+  <header class="header-section">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a class="site-logo" href="index.html"><img src="img/logo.png" alt="Opal Markets" ></a>
+      <nav class="main-menu d-none d-md-block">
+        <ul class="menu-list list-unstyled d-flex align-items-center mb-0">
+          <li><a href="clientdash.html">Client Dashboard</a></li>
+          <li><a href="trading.html">Trading</a></li>
+          
+          <li><a href="partner.html">Partners</a></li>
+          <li><a href="faqs.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="d-flex align-items-center gap-2">
+        <a href="login.html" class="text-muted"><i class="fa fa-user"></i></a>
+        <a class="site-btn" href="signup.html">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page title -->
+  <section class="page-info-section">
+    <div class="container">
+      <div class="big-hero rounded-shadow card-ghost">
+        <div class="hero-left">
+          <div class="tabs" role="tablist" aria-label="Deposit and Withdraw Tabs">
+            <div class="tab active" data-tab="deposit">Deposit</div>
+            <div class="tab" data-tab="withdraw">Withdraw</div>
+          </div>
+          <h2 class="mt-3">Fast & Secure Payments — Deposit & Withdraw</h2>
+          <p>Integrated with global payment gateways and wallet systems. Manage funding and payouts with full transparency and industry-standard security.</p>
+        </div>
+        <div class="hero-right text-end d-none d-md-block">
+          <small style="color:var(--muted)">Live Rates</small>
+          <div style="display:flex; gap:10px; margin-top:8px; justify-content:flex-end;">
+            <div class="rate-card">
+              <strong id="rate-usd">USD: 1.00</strong><br><small class="text-muted">Base</small>
+            </div>
+            <div class="rate-card">
+              <strong id="rate-btc">BTC: 68,245</strong><br><small class="text-muted">Market</small>
+            </div>
+            <div class="rate-card">
+              <strong id="rate-eth">ETH: 3,542</strong><br><small class="text-muted">Market</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- main content -->
+  <main class="py-4">
+    <div class="container">
+      <!-- Tab Panels -->
+      <div id="deposit" class="tab-panel">
+        <!-- deposit description -->
+        <section class="mb-4">
+          <div class="card-ghost rounded-shadow p-3">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-7">
+                <h3>Deposit Funds</h3>
+                <p class="mb-2" style="color:var(--muted)">Use Visa/MasterCard, bank transfer, e-wallets (Skrill / Neteller / Payoneer) or crypto (BTC/ETH/USDT). Instant credit for most methods.</p>
+                <a class="site-btn" href="#deposit-calc">Open Calculator</a>
+                <a class="site-btn" style="background:transparent; color:var(--accent); border:1px solid rgba(255,255,255,0.04); margin-left:10px;" href="#how-deposit">How to Deposit</a>
+              </div>
+              <div class="col-md-5">
+                <div class="grid-4">
+                  <div class="gateway">
+                    <i class="fa fa-credit-card"></i>
+                    <strong>Cards</strong>
+                    <small>Visa, MasterCard</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-university"></i>
+                    <strong>Bank</strong>
+                    <small>Local & SWIFT</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-paypal"></i>
+                    <strong>E-Wallets</strong>
+                    <small>Skrill, Neteller</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-bitcoin"></i>
+                    <strong>Crypto</strong>
+                    <small>BTC / ETH / USDT</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- counters -->
+        <section class="mb-4">
+          <div class="counters">
+            <div class="counter card-ghost">
+              <small>Total Deposits</small>
+              <h3 id="counter-deposits">$1,234,567</h3>
+              <p>Since Jan 2024</p>
+            </div>
+            <div class="counter card-ghost">
+              <small>Depositors</small>
+              <h3 id="counter-users">12,345</h3>
+              <p>Active users</p>
+            </div>
+            <div class="counter card-ghost">
+              <small>Avg Processing Time</small>
+              <h3 id="counter-time">15 min</h3>
+              <p>Most card/e-wallet</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- chart + calculator -->
+        <section class="row g-3 mb-5">
+          <div class="col-lg-7">
+            <div class="card-ghost rounded-shadow p-3">
+              <h5>Monthly Deposit Volume</h5>
+              <canvas id="depositLineChart" style="height:260px"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div id="deposit-calc" class="card-ghost rounded-shadow p-3">
+              <h5>Deposit Calculator</h5>
+              <p class="mb-2" style="color:var(--muted)">Simulate your deposit: convert and view fees.</p>
+              <div class="calc">
+                <select id="dep-from">
+                  <option value="USD" selected>USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="BTC">BTC</option>
+                </select>
+                <input id="dep-amount" type="number" placeholder="Amount" value="100"/>
+                <select id="dep-method">
+                  <option value="card" data-fee="1.5">Card (1.5%)</option>
+                  <option value="bank" data-fee="0.8">Bank (0.8%)</option>
+                  <option value="ewallet" data-fee="1.0">E-Wallet (1%)</option>
+                  <option value="crypto" data-fee="0.2">Crypto (0.2%)</option>
+                </select>
+              </div>
+              <div style="margin-top:12px;">
+                <button id="dep-calc-btn" class="site-btn">Calculate</button>
+              </div>
+              <div id="dep-result" style="margin-top:12px; color:var(--muted)"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- deposit pie -->
+        <section class="mb-5">
+          <div class="card-ghost rounded-shadow p-3">
+            <h5>Deposit Sources</h5>
+            <canvas id="depositPieChart" style="height:180px"></canvas>
+          </div>
+        </section>
+
+        <!-- how to deposit -->
+        <section id="how-deposit" class="mb-5">
+          <div class="card-ghost rounded-shadow p-3">
+            <h5>How to Deposit (Quick Guide)</h5>
+            <ol style="color:var(--muted)">
+              <li>Login to your account → Go to Deposits.</li>
+              <li>Select the payment method and enter the amount.</li>
+              <li>Complete verification & 3D Secure if required.</li>
+              <li>Funds will be credited instantly for cards/e-wallets, bank transfers may take 1–3 business days.</li>
+            </ol>
+          </div>
+        </section>
+      </div>
+
+      <!-- Withdraw Panel (hidden by default) -->
+      <div id="withdraw" class="tab-panel" style="display:none;">
+        <!-- withdraw description -->
+        <section class="mb-4">
+          <div class="card-ghost rounded-shadow p-3">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-7">
+                <h3>Withdraw Funds</h3>
+                <p class="mb-2" style="color:var(--muted)">Request payouts to your bank, card, e-wallet or crypto wallet. Withdrawal times depend on the method and verification status.</p>
+                <a class="site-btn" href="#withdraw-calc">Open Calculator</a>
+                <a class="site-btn" style="background:transparent; color:var(--accent); border:1px solid rgba(255,255,255,0.04); margin-left:10px;" href="#how-withdraw">How to Withdraw</a>
+              </div>
+              <div class="col-md-5">
+                <div class="grid-4">
+                  <div class="gateway">
+                    <i class="fa fa-university"></i>
+                    <strong>Bank</strong>
+                    <small>SWIFT / Local</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-credit-card"></i>
+                    <strong>Card Refund</strong>
+                    <small>Where applicable</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-paypal"></i>
+                    <strong>E-Wallet</strong>
+                    <small>Payoneer, Skrill</small>
+                  </div>
+                  <div class="gateway">
+                    <i class="fa fa-bitcoin"></i>
+                    <strong>Crypto</strong>
+                    <small>BTC / ETH / USDT</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- counters -->
+        <section class="mb-4">
+          <div class="counters">
+            <div class="counter card-ghost">
+              <small>Total Withdrawals</small>
+              <h3 id="counter-withdrawals">$567,890</h3>
+              <p>Since Jan 2024</p>
+            </div>
+            <div class="counter card-ghost">
+              <small>Withdraw Requests</small>
+              <h3 id="counter-requests">4,321</h3>
+              <p>Pending / processed</p>
+            </div>
+            <div class="counter card-ghost">
+              <small>Avg Payout Time</small>
+              <h3 id="counter-payout">1-3 days</h3>
+              <p>Bank transfers</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- chart + calculator -->
+        <section class="row g-3 mb-5">
+          <div class="col-lg-7">
+            <div class="card-ghost rounded-shadow p-3">
+              <h5>Withdrawal Distribution</h5>
+              <canvas id="withdrawLineChart" style="height:260px"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div id="withdraw-calc" class="card-ghost rounded-shadow p-3">
+              <h5>Withdraw Calculator</h5>
+              <p class="mb-2" style="color:var(--muted)">Estimate fees and final amount received.</p>
+              <div class="calc">
+                <select id="wd-to">
+                  <option value="USD" selected>USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="BTC">BTC</option>
+                </select>
+                <input id="wd-amount" type="number" placeholder="Amount" value="500"/>
+                <select id="wd-method">
+                  <option value="bank" data-fee="0.8">Bank (0.8%)</option>
+                  <option value="card" data-fee="1.2">Card (1.2%)</option>
+                  <option value="ewallet" data-fee="1.0">E-Wallet (1%)</option>
+                  <option value="crypto" data-fee="0.5">Crypto (0.5%)</option>
+                </select>
+              </div>
+              <div style="margin-top:12px;">
+                <button id="wd-calc-btn" class="site-btn">Calculate</button>
+              </div>
+              <div id="wd-result" style="margin-top:12px; color:var(--muted)"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- withdraw pie -->
+        <section class="mb-5">
+          <div class="card-ghost rounded-shadow p-3">
+            <h5>Withdrawal By Method</h5>
+            <canvas id="withdrawPieChart" style="height:180px"></canvas>
+          </div>
+        </section>
+
+        <!-- how to withdraw -->
+        <section id="how-withdraw" class="mb-5">
+          <div class="card-ghost rounded-shadow p-3">
+            <h5>How to Withdraw (Quick Guide)</h5>
+            <ol style="color:var(--muted)">
+              <li>Go to Withdrawals → Choose method and amount.</li>
+              <li>Complete KYC if not already verified.</li>
+              <li>Submit and wait for verification (1–3 business days).</li>
+              <li>Once processed, funds are sent to your selected destination.</li>
+            </ol>
+          </div>
+        </section>
+      </div>
+
+      <!-- FAQs -->
+      <section class="mb-5">
+        <div class="card-ghost rounded-shadow p-3">
+          <h5>Frequently Asked Questions</h5>
+          <div class="mt-3">
+            <div class="faq-item">
+              <div class="faq-head">
+                <div><strong>How long do deposits take?</strong></div>
+                <div><small style="color:var(--muted)">Tap to view</small></div>
+              </div>
+              <div class="faq-body">Card and e-wallet deposits are usually instant. Bank transfers may take 1-3 business days depending on the bank and country.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-head">
+                <div><strong>Are there deposit / withdrawal fees?</strong></div>
+                <div><small style="color:var(--muted)">Tap to view</small></div>
+              </div>
+              <div class="faq-body">Opal Markets charges small processing fees depending on the method. You can use the calculators above to estimate fees. Some methods may have fees charged by banks or intermediaries.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-head">
+                <div><strong>Is my money safe?</strong></div>
+                <div><small style="color:var(--muted)">Tap to view</small></div>
+              </div>
+              <div class="faq-body">Yes. Client funds are held in segregated accounts and all transactions use SSL/TLS encryption. We comply with AML & KYC procedures.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- footer -->
+  <footer style="padding:20px 0; border-top:1px solid rgba(255,255,255,0.02);">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div>
+        <img src="img/logo.png" alt="Opal Markets" style="height:40px;">
+        <div style="color:var(--muted); font-size:13px; margin-top:6px">© <script>document.write(new Date().getFullYear())</script> Opal Markets. All rights reserved.</div>
+      </div>
+      <div style="color:var(--muted)">Support: <a href="contact.html" style="color:var(--accent)">contact@opalmarkets.com</a></div>
+    </div>
+  </footer>
+
+  <!-- scripts: jquery, bootstrap assumed local -->
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <!-- Inline JS: tabs, counters, calculators, faq, charts -->
+  <script>
+    // --- Tabs ---
+    document.querySelectorAll('.tab').forEach(el=>{
+      el.addEventListener('click', ()=> {
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        const tab = el.getAttribute('data-tab');
+        document.querySelectorAll('.tab-panel').forEach(panel=>{
+          panel.style.display = panel.id === tab ? '' : 'none';
+        });
+      });
+    });
+
+    // --- Simple counters animation (numbers are example values) ---
+    function animateCounter(id, end, formatFn){
+      const el = document.getElementById(id);
+      if(!el) return;
+      let start = 0, duration = 1200;
+      const step = Math.max(1, Math.floor(end / (duration / 16)));
+      const timer = setInterval(()=>{
+        start += step;
+        if(start >= end){ start = end; clearInterval(timer); }
+        el.textContent = formatFn ? formatFn(start) : start;
+      }, 16);
+    }
+    animateCounter('counter-deposits', 1234567, v=>'$' + v.toLocaleString());
+    animateCounter('counter-users', 12345, v=>v.toLocaleString());
+    // withdraw
+    animateCounter('counter-withdrawals', 567890, v=>'$' + v.toLocaleString());
+    animateCounter('counter-requests', 4321, v=>v.toLocaleString());
+
+    // --- FAQ accordion ---
+    document.querySelectorAll('.faq-head').forEach(head=>{
+      head.addEventListener('click', ()=>{
+        const body = head.nextElementSibling;
+        const open = body.style.display === 'block';
+        document.querySelectorAll('.faq-body').forEach(b=>b.style.display='none');
+        if(!open) body.style.display = 'block';
+      });
+    });
+
+    // --- Calculator logic (deposit & withdraw) ---
+    function calcFee(amount, pct){
+      amount = parseFloat(amount)||0;
+      const fee = (amount * (parseFloat(pct) / 100));
+      return {fee: fee, total: (amount + fee), receive: (amount - fee)};
+    }
+
+    document.getElementById('dep-calc-btn').addEventListener('click', ()=>{
+      const amt = parseFloat(document.getElementById('dep-amount').value) || 0;
+      const opt = document.getElementById('dep-method').selectedOptions[0];
+      const feePct = parseFloat(opt.dataset.fee) || 0;
+      const res = calcFee(amt, feePct);
+      document.getElementById('dep-result').innerHTML = '<strong>Fee:</strong> $' + res.fee.toFixed(2) + '<br><strong>Total charged:</strong> $' + res.total.toFixed(2);
+    });
+    document.getElementById('wd-calc-btn').addEventListener('click', ()=>{
+      const amt = parseFloat(document.getElementById('wd-amount').value) || 0;
+      const opt = document.getElementById('wd-method').selectedOptions[0];
+      const feePct = parseFloat(opt.dataset.fee) || 0;
+      const res = calcFee(amt, feePct);
+      document.getElementById('wd-result').innerHTML = '<strong>Fee:</strong> $' + res.fee.toFixed(2) + '<br><strong>Estimated payout:</strong> $' + res.receive.toFixed(2);
+    });
+
+    // --- Charts (Chart.js) ---
+    // Deposit Line
+    const dctx = document.getElementById('depositLineChart').getContext('2d');
+    const depositLine = new Chart(dctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        datasets:[{
+          label:'Deposits USD',
+          data:[12000,18000,26000,38000,50000,66000,78000],
+          borderColor: 'rgba(18,164,255,0.95)',
+          backgroundColor: 'rgba(18,164,255,0.12)',
+          fill:true,
+          tension:0.35,
+          pointRadius:3
+        }]
+      },
+      options:{
+        responsive:true,
+        plugins:{ legend:{display:false}},
+        scales:{
+          x:{ ticks:{ color:'#9fb0d6' } },
+          y:{ ticks:{ color:'#9fb0d6' }, beginAtZero:true }
+        }
+      }
+    });
+
+    // Deposit Pie
+    // Deposit Pie
+const dpctx = document.getElementById('depositPieChart').getContext('2d');
+new Chart(dpctx, {
+  type:'pie',
+  data:{
+    labels:['Cards','Bank','E-Wallet','Crypto'],
+    datasets:[{
+      data:[45,20,20,15],
+      backgroundColor:['#007bff','#3399ff','#ffffff','#0b0b0b']
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{
+        position:'bottom',
+        labels:{ color:'#9fb0d6' }
+      }
+    }
+  }
+});
+
+
+    // Withdraw Line (re-using line for withdrawal trends)
+    const wctx = document.getElementById('withdrawLineChart').getContext('2d');
+    new Chart(wctx, {
+      type:'bar',
+      data:{
+        labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        datasets:[{
+          label:'Withdrawals USD',
+          data:[7000,12000,15000,21000,30000,35000,41000],
+          backgroundColor:'rgba(0, 123, 255, 0.9)'
+        }]
+      },
+      options:{ responsive:true, plugins:{ legend:{display:false}}, scales:{ x:{ ticks:{ color:'#9fb0d6' } }, y:{ ticks:{ color:'#9fb0d6' }, beginAtZero:true } } }
+    });
+
+    // Withdraw Pie
+    // Withdraw Pie
+const wpctx = document.getElementById('withdrawPieChart').getContext('2d');
+new Chart(wpctx, {
+  type:'doughnut',
+  data:{
+    labels:['Bank','Card','E-Wallet','Crypto'],
+    datasets:[{
+      data:[50,20,18,12],
+      backgroundColor:['#3399ff','#007bff','#ffffff','#0b0b0b']
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{
+        position:'bottom',
+        labels:{ color:'#9fb0d6' }
+      }
+    }
+  }
+});
+
+
+    // --- Simulated live rate updates (replace with real API later) ---
+    function updateSimRates(){
+      document.getElementById('rate-usd').textContent = 'USD: 1.00';
+      // small jitter for demo
+      const btc = (68245 + Math.round((Math.random()-0.5)*400)).toLocaleString();
+      const eth = (3542 + Math.round((Math.random()-0.5)*40)).toLocaleString();
+      document.getElementById('rate-btc').textContent = 'BTC: ' + btc;
+      document.getElementById('rate-eth').textContent = 'ETH: ' + eth;
+    }
+    updateSimRates();
+    setInterval(updateSimRates, 7000);
+
+  </script>
+
+</body>
+</html>

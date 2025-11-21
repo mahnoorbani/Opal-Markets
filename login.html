@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Opal Markets</title>
+  <link href="img/logo.png" rel="shortcut icon"/>
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="css/themify-icons.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d0d0d 0%, #161b22 100%);
+      color: #fff;
+      font-family: 'Lato', sans-serif;
+    }
+    .login-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.05);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+    }
+    .login-box h2 {
+      margin-bottom: 25px;
+      color: #fff;
+    }
+    .form-control {
+      background: transparent;
+      border: 1px solid #444;
+      color: #fff;
+    }
+    .form-control:focus {
+      border-color: #00c6ff;
+      box-shadow: none;
+    }
+    .site-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 12px;
+      transition: 0.3s;
+    }
+    .site-btn:hover {
+      opacity: 0.9;
+    }
+    .bottom-text {
+      margin-top: 15px;
+    }
+    a {
+      color: #00c6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <section class="login-section">
+    <div class="login-box">
+      <img src="img/logo.png" alt="Logo" class="mb-4" style="max-width: 140px;">
+      <h2>Welcome Back</h2>
+      <form action="dashboard.html" method="POST">
+        <div class="form-group mb-3">
+          <input type="email" class="form-control" placeholder="Email Address" required>
+        </div>
+        <div class="form-group mb-4">
+          <input type="password" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="site-btn sb-gradients">Login</button>
+      </form>
+      <p class="bottom-text mt-3">Don’t have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+  </section>
+</body>
+</html>

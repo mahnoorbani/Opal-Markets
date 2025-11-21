@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Client Dashboard – Opal Markets</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Client Dashboard — Opal Markets. Account balances, deposits, trades, analytics and quick actions." />
+  <link href="img/logo.png" rel="shortcut icon"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap & FontAwesome (assumed local or CDN) -->
+  <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="css/themify-icons.css"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#000000;
+      --card:#0b0b0b;
+      --muted:#cfcfcf;
+      --accent:#007bff;
+      --accent-2:#3399ff;
+      --glass: rgba(255,255,255,0.04);
+      --radius:12px;
+      font-family:'Lato',sans-serif;
+    }
+    html,body{height:100%; background: linear-gradient(180deg,var(--bg), #050505); color:#fff; margin:0;}
+    .container{max-width:1188px; margin:0 auto; padding:18px;}
+
+    /* header */
+    .header{display:flex;justify-content:space-between;align-items:center;padding:12px 0;}
+    .main-menu .menu-list li a{color:lightskyblue; margin-right:14px;}
+    .site-logo img{height:56px;}
+    .top-actions{display:flex;gap:12px;align-items:center;}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);}
+
+    /* main layout */
+    .grid{display:grid;grid-template-columns: 1fr 360px; gap:18px; align-items:start;}
+    @media (max-width:992px){ .grid{grid-template-columns:1fr;} .sidebar{order:2;} }
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.06); padding:18px; border-radius:12px;}
+    .card .title{font-weight:700; color:#fff; margin-bottom:8px;}
+    .small-muted{color:var(--muted); font-size:13px;}
+
+    /* balances */
+    .balance-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .balance-item{flex:1; min-width:160px; padding:14px; border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); text-align:left;}
+    .balance-item h4{margin:6px 0 0; font-size:20px;}
+    .balance-item small{color:var(--muted);display:block;}
+
+    /* charts area */
+    .charts{display:flex;gap:12px;flex-wrap:wrap;}
+    .chart-lg{flex:1; min-width:300px; padding:12px; border-radius:10px;}
+
+    /* recent lists */
+    .list-row{display:flex;gap:12px;flex-direction:column;}
+    .tx-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;}
+    .tx-left{display:flex;gap:10px;align-items:center;}
+    .tx-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02); color:var(--accent);}
+    .tx-meta small{color:var(--muted);}
+
+    /* mini deposit/withdraw inside sidebar */
+    .sidebar .quick{display:flex;flex-direction:column;gap:12px;}
+    .methods{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+    .method{padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.03);background:var(--card);}
+
+    /* tabs inside dashboard */
+    .tabs{display:flex;gap:8px;background:var(--glass);padding:6px;border-radius:10px;}
+    .tab{padding:8px 12px;cursor:pointer;border-radius:8px;color:var(--muted);}
+    .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;}
+
+    /* faq small */
+    .faq{margin-top:12px;}
+    .faq h6{margin:0 0 8px 0;color:var(--muted);font-weight:700}
+    .faq p{margin:0;color:var(--muted);font-size:14px;}
+
+    /* subtle hover */
+    .card:hover{transform:translateY(-6px); transition: .25s;}
+    .btn-primary:hover{transform:translateY(-3px);}
+
+    /* footer */
+    footer{margin-top:20px;padding:12px;text-align:center;color:var(--muted);font-size:13px;}
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- header -->
+    <header class="header">
+
+
+
+
+      
+      <div style="display:flex;align-items:center;gap:18px;">
+        <a href="index.html" class="site-logo"><img src="img/logo.png" alt="Opal Markets"></a>
+        <div>
+          <div style="font-weight:700;font-size:18px">Client Dashboard</div>
+          <div class="small-muted">Welcome back — view your balances & activity</div>
+        </div>
+      </div>
+
+
+      <nav class="main-menu d-none d-md-block">
+        <ul class="menu-list list-unstyled d-flex align-items-center mb-0">
+          <li><a href="deposit.html">Deposit/Withdraw</a></li>
+          <li><a href="account.html">Accounts</a></li>
+          <li><a href="trading.html">Trading</a></li>
+          <li><a href="education.html">Education</a></li>
+          
+          
+        </ul>
+      </nav>
+
+     <div class="top-actions">
+  <div class="small-muted d-none d-md-block" id="liveRates">USD:1.00 • BTC:68,245 • ETH:3,542</div>
+  <button class="btn btn-ghost" onclick="window.location.href='deposit.html'">Deposit</button>
+  <button class="btn btn-primary" onclick="window.location.href='deposit.html'">Withdraw</button>
+</div>
+
+    </header>
+
+    <!-- main grid -->
+    <div class="grid" style="margin-top:12px;">
+      <!-- main column -->
+      <main>
+        <!-- balances -->
+        <section class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div>
+              <div class="title">Account Summary</div>
+              <div class="small-muted">Overview of your wallets, balances and quick actions</div>
+            </div>
+            <div class="tabs" role="tablist">
+              <div class="tab active" data-tab="overview">Overview</div>
+              <div class="tab" data-tab="activity">Activity</div>
+              <div class="tab" data-tab="settings">Settings</div>
+            </div>
+          </div>
+
+          <div id="overview" class="tab-panel" style="margin-top:14px;">
+            <div class="balance-row">
+              <div class="balance-item">
+                <small class="small-muted">Account Balance</small>
+                <h4 id="balance-amount">$12,450.50</h4>
+                <small class="small-muted">Available to trade</small>
+              </div>
+              <div class="balance-item">
+                <small class="small-muted">Equity</small>
+                <h4 id="equity-amount">$18,230.75</h4>
+                <small class="small-muted">Including open P/L</small>
+              </div>
+              <div class="balance-item">
+                <small class="small-muted">Total Deposits</small>
+                <h4 id="total-dep">$1,234,567</h4>
+                <small class="small-muted">Since Jan 2024</small>
+              </div>
+              <div class="balance-item">
+                <small class="small-muted">Total Withdrawals</small>
+                <h4 id="total-wd">$567,890</h4>
+                <small class="small-muted">Since Jan 2024</small>
+              </div>
+            </div>
+
+            <div style="height:18px"></div>
+
+            <div class="charts">
+              <div class="chart-lg card">
+                <div class="title">Performance (Equity & Balance)</div>
+                <canvas id="performanceChart" style="height:240px"></canvas>
+              </div>
+              <div class="chart-lg card" style="max-width:380px;">
+                <div class="title">Asset Allocation</div>
+                <canvas id="assetChart" style="height:240px"></canvas>
+                <div class="small-muted" style="margin-top:8px">Forex / Crypto / Indices / Commodities</div>
+              </div>
+            </div>
+
+            <div style="height:16px"></div>
+
+            <div class="card">
+              <div class="title">Recent Trades</div>
+              <div class="small-muted" style="margin-bottom:8px">Latest executed trades (click for details)</div>
+              <div class="list-row">
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-line-chart"></i></div><div class="tx-meta"><strong>EUR/USD</strong><div><small class="small-muted">Buy 0.50 lot • 1.0952</small></div></div></div><div class="text-end"><small class="small-muted">+$320</small></div></div>
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-bitcoin"></i></div><div class="tx-meta"><strong>BTC/USD</strong><div><small class="small-muted">Sell 0.02 • 68200</small></div></div></div><div class="text-end"><small class="small-muted">-$40</small></div></div>
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-dollar"></i></div><div class="tx-meta"><strong>USD/JPY</strong><div><small class="small-muted">Buy 1.00 • 110.25</small></div></div></div><div class="text-end"><small class="small-muted">+$120</small></div></div>
+              </div>
+            </div>
+
+          </div>
+
+          <div id="activity" class="tab-panel" style="display:none;margin-top:14px;">
+            <div class="card">
+              <div class="title">Recent Transactions</div>
+              <div class="small-muted" style="margin-bottom:8px">Deposits, withdrawals and internal transfers</div>
+              <div class="list-row">
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-credit-card"></i></div><div class="tx-meta"><strong>Deposit</strong><div><small class="small-muted">$500 • Card</small></div></div></div><div><small class="small-muted">2 hours ago</small></div></div>
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-university"></i></div><div class="tx-meta"><strong>Withdraw</strong><div><small class="small-muted">$1,200 • Bank transfer</small></div></div></div><div><small class="small-muted">1 day ago</small></div></div>
+                <div class="tx-item"><div class="tx-left"><div class="tx-icon"><i class="fa fa-bitcoin"></i></div><div class="tx-meta"><strong>Deposit</strong><div><small class="small-muted">$2,000 • Crypto</small></div></div></div><div><small class="small-muted">3 days ago</small></div></div>
+              </div>
+            </div>
+            <div style="height:12px"></div>
+            <div class="card">
+              <div class="title">Activity Feed</div>
+              <div class="small-muted" style="margin-top:8px">Account logins, password changes, KYC updates</div>
+              <div style="margin-top:10px" class="small-muted">
+                • 2025-10-30 — KYC Verified (ID) <br>
+                • 2025-10-29 — Password changed <br>
+                • 2025-10-27 — 2FA enabled
+              </div>
+            </div>
+          </div>
+
+          <div id="settings" class="tab-panel" style="display:none;margin-top:14px;">
+            <div class="card">
+              <div class="title">Account Settings</div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+                <button class="btn btn-ghost">Profile</button>
+                <button class="btn btn-ghost">Security</button>
+                <button class="btn btn-ghost">API Keys</button>
+                <button class="btn btn-ghost">KYC Documents</button>
+              </div>
+              <div style="height:12px"></div>
+              <div class="faq">
+                <h6>Support</h6>
+                <p>Contact support via <a href="contact.html" style="color:var(--accent)">contact@opalmarkets.com</a> or use live chat for urgent requests.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- sidebar -->
+      <aside class="sidebar">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="title">Wallets</div>
+              <div class="small-muted">Overview of available wallets</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700" id="wallet-usd">$8,300</div>
+              <div class="small-muted">USD Wallet</div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="methods">
+            <div class="method"><i class="fa fa-credit-card" style="color:var(--accent)"></i><div class="small-muted">Cards</div></div>
+            <div class="method"><i class="fa fa-university" style="color:var(--accent)"></i><div class="small-muted">Bank</div></div>
+            <div class="method"><i class="fa fa-paypal" style="color:var(--accent)"></i><div class="small-muted">E-Wallets</div></div>
+            <div class="method"><i class="fa fa-bitcoin" style="color:var(--accent)"></i><div class="small-muted">Crypto</div></div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="quick">
+  <button class="btn btn-primary" onclick="window.location.href='deposit.html'">Quick Deposit</button>
+  <button class="btn btn-ghost" onclick="window.location.href='deposit.html'">Quick Withdraw</button>
+  <div style="height:8px"></div>
+
+  <div class="card" style="padding:10px">
+    <div class="small-muted">Deposit Calculator</div>
+    <div style="height:8px"></div>
+    <input id="mini-amount" type="number" value="100" style="width:100%;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.05);color:#fff;">
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <select id="mini-method" style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.05);color:#fff;">
+        <option value="card" data-fee="1.5">Card (1.5%)</option>
+        <option value="bank" data-fee="0.8">Bank (0.8%)</option>
+      </select>
+      <button class="btn btn-primary" id="mini-calc">Calc</button>
+    </div>
+    <div id="mini-result" class="small-muted" style="margin-top:8px"></div>
+  </div>
+</div>
+
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div class="title">Deposit & Withdraw</div>
+          <div class="small-muted">Manage your funds</div>
+
+          <div style="margin-top:10px">
+            <!-- embedded deposit/withdraw tabs -->
+            <div class="tabs" style="margin-bottom:10px;">
+              <div class="tab active" data-mini="deposit">Deposit</div>
+              <div class="tab" data-mini="withdraw">Withdraw</div>
+            </div>
+
+            <!-- Deposit & Withdraw tabs -->
+<div id="mini-deposit" class="mini-panel">
+  <div class="small-muted">Choose method</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="btn btn-ghost" onclick="prefillDeposit('card')">Card</button>
+    <button class="btn btn-ghost" onclick="prefillDeposit('bank')">Bank</button>
+    <button class="btn btn-ghost" onclick="prefillDeposit('crypto')">Crypto</button>
+  </div>
+  <div style="height:8px"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="window.location.href='deposit.html'">Go to Deposit Panel</button>
+</div>
+
+<div id="mini-withdraw" class="mini-panel" style="display:none;">
+  <div class="small-muted">Withdraw to</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="btn btn-ghost" onclick="prefillWithdraw('bank')">Bank</button>
+    <button class="btn btn-ghost" onclick="prefillWithdraw('card')">Card</button>
+  </div>
+  <div style="height:8px"></div>
+  <button class="btn btn-ghost" style="width:100%" onclick="window.location.href='deposit.html'">Go to Withdraw Panel</button>
+</div>
+
+
+          </div>
+
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      © <script>document.write(new Date().getFullYear())</script> Opal Markets — Client Dashboard
+    </footer>
+  </div>
+
+  <!-- scripts -->
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <script>
+    // Tab switching (main tabs)
+    document.querySelectorAll('.header .tabs, .tabs').forEach(container=>{
+      // top-level main tabs
+    });
+    document.querySelectorAll('.card .tabs .tab, .tabs .tab').forEach(el=>{
+      el.addEventListener('click', function(){
+        // handle main tabs on dashboard overview (top tabs)
+        const parent = this.closest('.card') || document;
+        // if this is the main overview tabs
+        if(this.parentElement.parentElement && this.parentElement.parentElement.querySelector('#overview')){
+          document.querySelectorAll('[id="overview"], [id="activity"], [id="settings"]').forEach(p=>p.style.display='none');
+          const t = this.getAttribute('data-tab');
+          if(t) document.getElementById(t).style.display = '';
+          document.querySelectorAll('.card .tabs .tab').forEach(tn=>tn.classList.remove('active'));
+          document.querySelectorAll('.tab').forEach(tn=>tn.classList.remove('active'));
+          this.classList.add('active');
+        }
+        // handle mini deposit/withdraw tabs in sidebar
+        const mini = this.getAttribute('data-mini');
+        if(mini){
+          document.getElementById('mini-deposit').style.display = mini === 'deposit' ? '' : 'none';
+          document.getElementById('mini-withdraw').style.display = mini === 'withdraw' ? '' : 'none';
+          document.querySelectorAll('.tabs .tab').forEach(tn=>tn.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Counters (example values)
+    function animate(id, end, formatter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      let cur = 0; const step = Math.max(1, Math.floor(end/60));
+      const it = setInterval(()=>{ cur += step; if(cur>=end){cur=end; clearInterval(it);} el.textContent = formatter ? formatter(cur) : cur; }, 16);
+    }
+    animate('balance-amount', 12450, v=>'$' + v.toLocaleString());
+    animate('equity-amount', 18230, v=>'$' + v.toLocaleString());
+    animate('total-dep', 1234567, v=>'$' + v.toLocaleString());
+    animate('total-wd', 567890, v=>'$' + v.toLocaleString());
+
+    // Mini calc
+    document.getElementById('mini-calc').addEventListener('click', ()=>{
+      const amt = parseFloat(document.getElementById('mini-amount').value) || 0;
+      const opt = document.getElementById('mini-method').selectedOptions[0];
+      const fee = parseFloat(opt.dataset.fee)||0;
+      const f = (amt * fee/100);
+      document.getElementById('mini-result').innerHTML = 'Fee: $' + f.toFixed(2) + ' • Charged: $' + (amt+f).toFixed(2);
+    });
+
+    // Dashboard charts (Chart.js)
+    const pctx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(pctx, {
+      type:'line',
+      data:{
+        labels:['Aug','Sep','Oct','Nov','Dec','Jan','Feb'],
+        datasets:[
+          { label:'Balance', data:[8000,9000,9500,11000,10200,12000,12450], borderColor: 'rgba(51,153,255,0.95)', backgroundColor:'rgba(51,153,255,0.08)', fill:true, tension:0.35 },
+          { label:'Equity',  data:[8200,9300,9800,11300,10800,12900,18230], borderColor: 'rgba(0,123,255,0.95)', backgroundColor:'rgba(0,123,255,0.06)', fill:true, tension:0.35 }
+        ]
+      },
+      options:{
+        responsive:true,
+        plugins:{legend:{labels:{color:'#fff'}}},
+        scales:{ x:{ticks:{color:'#cfcfcf'}}, y:{ticks:{color:'#cfcfcf'}, grid:{color:'rgba(255,255,255,0.04)'} }
+      }
+    }});
+
+    const actx = document.getElementById('assetChart').getContext('2d');
+    const assetChart = new Chart(actx, {
+      type:'doughnut',
+      data:{
+        labels:['Forex','Crypto','Indices','Commodities'],
+        datasets:[{ data:[55,20,15,10], backgroundColor:['#007bff','#3399ff','#111111','#444444'], borderColor:'#000', borderWidth:2 }]
+      },
+      options:{ responsive:true, plugins:{legend:{labels:{color:'#cfcfcf',font:{size:12}}}}, cutout:'60%' }
+    });
+
+    // Withdraw & Deposit functions open mini modals (simple panels)
+    function openDeposit(){
+  window.location.href = 'deposit.html';
+}
+function openWithdraw(){
+  window.location.href = 'deposit.html';
+}
+    function prefillDeposit(method){
+      document.getElementById('mini-amount').value = 100;
+      document.getElementById('mini-method').value = method;
+    }
+    function prefillWithdraw(method){
+      // simulate
+      alert('Prefill withdraw to: ' + method);
+    }
+
+    // Simulated live rates update
+    function updateRates(){
+      const btc = (68245 + Math.round((Math.random()-0.5)*400)).toLocaleString();
+      const eth = (3542 + Math.round((Math.random()-0.5)*40)).toLocaleString();
+      document.getElementById('liveRates').textContent = 'USD:1.00 • BTC:' + btc + ' • ETH:' + eth;
+    }
+    setInterval(updateRates, 7000);
+
+
+  </script>
+</body>
+</html>
